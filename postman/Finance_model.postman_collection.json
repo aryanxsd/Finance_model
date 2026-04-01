@@ -1,0 +1,244 @@
+{
+  "info": {
+    "_postman_id": "b5cf8348-4e2d-4ccb-9578-f0eaf0f8815d",
+    "name": "Finance Model API",
+    "description": "Postman collection for the Finance Data Processing and Access Control Backend assignment. Includes authenticated requests for viewer, analyst, and admin roles.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Basic health endpoint to verify that the API server is running."
+      }
+    },
+    {
+      "name": "Viewer - Dashboard Summary",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{viewerToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/dashboard/summary",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "dashboard",
+            "summary"
+          ]
+        },
+        "description": "Fetch dashboard summary metrics as a viewer."
+      }
+    },
+    {
+      "name": "Viewer - Recent Activity",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{viewerToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/dashboard/recent-activity?limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "dashboard",
+            "recent-activity"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        },
+        "description": "Fetch recent dashboard activity as a viewer."
+      }
+    },
+    {
+      "name": "Analyst - List Records",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{analystToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/records",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "records"
+          ]
+        },
+        "description": "List financial records as an analyst."
+      }
+    },
+    {
+      "name": "Analyst - Search Records",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{analystToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/records?search=consulting&page=1&page_size=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "records"
+          ],
+          "query": [
+            {
+              "key": "search",
+              "value": "consulting"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "page_size",
+              "value": "5"
+            }
+          ]
+        },
+        "description": "Search records by keyword with pagination as an analyst."
+      }
+    },
+    {
+      "name": "Admin - List Users",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "users"
+          ]
+        },
+        "description": "List all users as an admin."
+      }
+    },
+    {
+      "name": "Admin - Create User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Naina Viewer\",\n  \"email\": \"naina@example.com\",\n  \"role\": \"viewer\",\n  \"status\": \"active\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "users"
+          ]
+        },
+        "description": "Create a user as an admin."
+      }
+    },
+    {
+      "name": "Admin - Create Record",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 5200,\n  \"type\": \"income\",\n  \"category\": \"Consulting\",\n  \"date\": \"2026-03-25\",\n  \"notes\": \"Architecture advisory\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/records",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "records"
+          ]
+        },
+        "description": "Create a financial record as an admin."
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:5000"
+    },
+    {
+      "key": "viewerToken",
+      "value": "viewer-token"
+    },
+    {
+      "key": "analystToken",
+      "value": "analyst-token"
+    },
+    {
+      "key": "adminToken",
+      "value": "admin-token"
+    }
+  ]
+}

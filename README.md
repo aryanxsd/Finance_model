@@ -154,6 +154,10 @@ These are created automatically on first startup:
 
 ## API overview
 
+Postman collection:
+
+- `postman/Finance_model.postman_collection.json`
+
 ### Health
 
 - `GET /health`
