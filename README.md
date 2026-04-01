@@ -86,14 +86,61 @@ finance_dashboard_backend/
 
 ## Setup
 
-From the `finance_dashboard_backend` directory:
+Clone the repository and move into the project folder:
+
+```bash
+git clone https://github.com/aryanxsd/Finance_model.git
+cd Finance_model
+```
+
+## Create a virtual environment
+
+### On WSL / Ubuntu / Linux
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### On Windows PowerShell
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+### On Windows Command Prompt
+
+```cmd
+python -m venv .venv
+.venv\Scripts\activate.bat
+```
+
+## Install dependencies
 
 ```bash
 python -m pip install -r requirements.txt
+```
+
+## Run the application
+
+```bash
 python run.py
 ```
 
 The server starts on `http://127.0.0.1:5000`.
+
+## Run tests
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+## Notes
+
+- If `python` is not available on WSL or Linux, use `python3`.
+- The application uses SQLite for persistence and creates the local database automatically on first run.
+- Seeded demo users are created automatically for testing.
 
 ## Seeded users
 
@@ -198,14 +245,6 @@ curl -X POST http://127.0.0.1:5000/api/users \
 - Rate limiting is implemented in memory, which is appropriate for a local assessment project but not intended as a distributed production solution.
 - The app uses modular route files plus shared auth, permission, database, and validation layers for maintainability.
 - SQLite was chosen for portability and zero-config local setup.
-
-## Running tests
-
-From the `finance_dashboard_backend` directory:
-
-```bash
-python -m unittest discover -s tests -v
-```
 
 ## Submission notes
 
