@@ -30,6 +30,9 @@ class FinanceApiTestCase(unittest.TestCase):
         records_response = self.client.get("/api/records", headers=self.viewer_headers)
         self.assertEqual(records_response.status_code, 403)
 
+        users_response = self.client.get("/api/users", headers=self.viewer_headers)
+        self.assertEqual(users_response.status_code, 403)
+
     def test_analyst_can_filter_records(self):
         response = self.client.get(
             "/api/records?type=income&category=Salary",
@@ -76,6 +79,39 @@ class FinanceApiTestCase(unittest.TestCase):
         self.assertEqual(update_response.status_code, 200)
         self.assertEqual(update_response.get_json()["data"]["notes"], "Updated note")
 
+    def test_admin_can_delete_record_with_soft_delete_behavior(self):
+        create_response = self.client.post(
+            "/api/records",
+            headers=self.admin_headers,
+            json={
+                "amount": 410,
+                "type": "expense",
+                "category": "Meals",
+                "date": "2026-03-18",
+                "notes": "Team lunch",
+            },
+        )
+        record_id = create_response.get_json()["data"]["id"]
+
+        delete_response = self.client.delete(f"/api/records/{record_id}", headers=self.admin_headers)
+        self.assertEqual(delete_response.status_code, 200)
+
+        get_response = self.client.get(f"/api/records/{record_id}", headers=self.analyst_headers)
+        self.assertEqual(get_response.status_code, 404)
+
+    def test_analyst_cannot_create_record(self):
+        response = self.client.post(
+            "/api/records",
+            headers=self.analyst_headers,
+            json={
+                "amount": 100,
+                "type": "expense",
+                "category": "Food",
+                "date": "2026-03-20",
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+
     def test_validation_errors_return_400(self):
         response = self.client.post(
             "/api/records",
@@ -89,6 +125,13 @@ class FinanceApiTestCase(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 400)
         self.assertIn("Amount", response.get_json()["error"]["message"])
+
+    def test_invalid_pagination_returns_400(self):
+        response = self.client.get(
+            "/api/records?page=0&page_size=200",
+            headers=self.analyst_headers,
+        )
+        self.assertEqual(response.status_code, 400)
 
     def test_admin_can_manage_users(self):
         create_response = self.client.post(
@@ -112,6 +155,15 @@ class FinanceApiTestCase(unittest.TestCase):
         self.assertEqual(patch_response.status_code, 200)
         self.assertEqual(patch_response.get_json()["data"]["role"], "analyst")
 
+        get_response = self.client.get(f"/api/users/{new_user_id}", headers=self.admin_headers)
+        self.assertEqual(get_response.status_code, 200)
+        self.assertEqual(get_response.get_json()["data"]["email"], "riya@example.com")
+
+    def test_authenticated_user_can_fetch_profile(self):
+        response = self.client.get("/api/users/me", headers=self.analyst_headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json()["data"]["role"], "analyst")
+
     def test_dashboard_summary_matches_seeded_data(self):
         response = self.client.get("/api/dashboard/summary", headers=self.analyst_headers)
         payload = response.get_json()["data"]
@@ -119,6 +171,18 @@ class FinanceApiTestCase(unittest.TestCase):
         self.assertEqual(payload["total_income"], 18800.0)
         self.assertEqual(payload["total_expenses"], 3170.5)
         self.assertEqual(payload["net_balance"], 15629.5)
+
+    def test_dashboard_recent_activity_and_trends_are_available(self):
+        recent_response = self.client.get("/api/dashboard/recent-activity?limit=3", headers=self.viewer_headers)
+        self.assertEqual(recent_response.status_code, 200)
+        self.assertEqual(recent_response.get_json()["count"], 3)
+
+        trends_response = self.client.get("/api/dashboard/trends", headers=self.viewer_headers)
+        trends_payload = trends_response.get_json()
+        self.assertEqual(trends_response.status_code, 200)
+        self.assertGreaterEqual(trends_payload["count"], 1)
+        self.assertIn("month", trends_payload["data"][0])
+        self.assertIn("net_balance", trends_payload["data"][0])
 
     def test_rate_limit_returns_429_after_threshold(self):
         limited_app = create_app(
