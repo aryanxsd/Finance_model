@@ -241,6 +241,12 @@ curl -X POST http://127.0.0.1:5000/api/users \
   -d "{\"name\": \"Naina Viewer\", \"email\": \"naina@example.com\", \"role\": \"viewer\", \"status\": \"active\"}"
 ```
 
+## API Testing
+
+Postman Collection:
+https://github.com/aryanxsd/Finance_model/blob/main/postman/Finance_model.postman_collection.json
+
+
 ## Design notes and assumptions
 
 - Authentication is intentionally lightweight and mock-friendly for the assessment.
